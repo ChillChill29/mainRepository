@@ -1,0 +1,85 @@
+3 loại VCS:
+	local: lưu trên máy
+	centralized: lưu trên sever
+	distributed: lưu trên tất cả các máy cùng tham gia và cả sever
+#thao tác trên web
+	#Tạo một gitHub respository (newProject)
+		creat respository
+		write descripton(not important)
+		respository name(project's name)
+		public or private
+		check import readme(not important): sẽ được cung cấp UI
+	#Tạo branch: tạo một phiên bản thử nghiệm, khi mọi thứ đạt yêu cầu thì import vào main Project
+		Code/Branch: master 
+		enter name Branch
+		create branch
+	#commit command: sửa file có ghi chú
+		Code/
+		file -> Edit file
+		write message and commit changes
+	#pull command: yêu cầu xét duyệt commit đến owner
+		Pull requests/New pull request/fileChanged/Create pull request/ enterName/ creat pull request
+	#merge command: hợp nhất các lệnh pull command vào merge branch
+		Pull requests/ merge pull request/ cofirm merge/ 
+#thao tác trên Git commands
+	Thao tác repo trên local (máy tính cá nhân):
+		Cấu hình tài khoản
+			git config --global user.name ''
+			git config --global user.email ''
+		Tạo git repo trên local
+			git init: tạo thư mục ẩn .git chứa các file 
+			git status: cho biết các trạng thái			
+			Có 3 trạng thái:
+					untracked files: file đang làm việc
+					no commits yet(straging area): đã xong nhưng chưa commit 
+					commited: đã commit, với mỗi commit chứa các file và message đánh dấu sự cập nhật
+			Chuyển từ unstracked files -> straging area:
+				git add namefile.
+				git add namefile1. namefile2.
+				git add .: toàn bộ thay đổi
+			*Chuyển ngược lại stragin area -> untracked files(đang làm việc):
+				git restore --straged namefile.
+				git restore namefile1. namefile2.				
+			Chuyển từ straging are -> commited:
+				git commit -m "descrise updating"
+					Khi thay đổi file, tại mục changes của vscode, có các thay đổi
+			Các message đại diện cho các thay đổi:
+				git log
+		Connect git repo trên github:
+			new -> nhập repository name -> public|private -> các option -> create repository
+			Kết nối repo local với repo github:
+				git remote add origin ...
+					nếu bị lỗi remote origin already hãy nhập thêm trước khi add
+						git remote rm origin
+						git remote add origin ...
+				git branch -M main
+				git push -u origin main
+		Tạo phiên bản thử nghiệm (branch):
+			git brach: các phiên bản hiện có
+			Tạo branch mới:
+			 	> add lên bình thường, nhưng nằm ở branch
+			Quay lại main branch:
+				git checkout main
+			Quay lại branch có sẵn:
+			 	git checkout -b nameNewBranch
+			Chuyển các file update từ branch lên main:
+				git merge nameNewBranch
+				git push: Hòa các file merge này vào main tạo thành commit
+			Chuyển về lại các phiên bản cũ hơn:
+				>Tạo ra 1 branch ngay vị trí đó
+				git checkout commitId
+					git checkout 12DA1...
+		Khi có sự khác biệt giữa nhiều thành viên:
+			> Khi commit code sẽ có thông báo
+			git pull: để kéo toàn bộ code về và so sánh
+			chọn phiên bản -> git commit lại
+		Ẩn/không commit các file không cần thiết:
+			ví dụ: node_modules,...
+			tạo file .gitignore -> gõ tên file vào -> save -> commit .gitignore
+		Xóa liên kết git:
+			git remote rm origin
+
+
+
+
+				

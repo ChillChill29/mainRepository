@@ -1,0 +1,337 @@
+Các tính chất phức tạp của C++
+	char
+Oop luôn đảm bảo 4 thuộc tính:
+	Tính đóng gói: là để hạn chế các lỗi khi phát triển chương trình chứ không phải là bảo mật hay che giấu thông tin
+	Tính kế thừa: hạn chế trùng lặp và có thể dùng chung để tiết kiệm và logic
+	Tính đa hình: Nhiều vai trò
+		Nạp chồng phương thức: Cùng phương thức(Tên) nhưng nhiều kiểu dữ liệu, nhiều cách thức	
+		Ghi đè phương thức: Cùng phương thức nhưng nhiều công thức, và có thể khác kết quả
+		Đa hình
+	Tính trừu tượng: Chỉ quan tâm đến tính năng, công dụng, hoàn toàn bỏ qua cách thức và cách tạo ra kết quả
+	
+Phạm vi truy cập:
+	public:     truy cập trong class;  truy cập bên trong lớp con;  truy cập bên ngoài class
+	Protected:  truy cập trong class;  truy cập bên trong lớp con;  
+	private:    truy cập trong class;  
+	*Nếu dùng hàm friend ở hàm con thì có thể truy cập toàn bộ
+
+constructor: 
+	Hàm sẽ luôn được gọi khi khởi tạo hàm
+	Mặc định là luôn trùng tên với class
+	Có thể khởi tạo biến 
+		class Student{
+		public:
+			int age;
+			Student(){
+				age = 18;
+			}
+		};
+	hoặc dùng để thông báo khi hàm được gọi
+		class Student{
+		public:
+			Student(){
+				cout<<"Constructor called";
+			}
+		};
+	*Có thể đóng vai trò in trực tiếp giá trị
+		class Student {
+		private:
+		    string name;
+		    int age;
+		public:
+		    Student(string name, int a) {
+		    	age = a;
+		        cout << "My name is " << name;
+		    }
+		};
+
+		Student s("Quan", "18");
+
+		*Nếu thay biến a thành age thì dùng câu lệnh this-> để xác định biến
+			Student(string name, int age) {
+		    	this->age = a;
+		        cout << "My name is " << name;
+		    }
+		*Khi đã gọi contructor có tham số thì buộc phải gán đủ, hoặc là bị lỗi
+
+
+	Hay là không có chức năng gì (Mặc định)
+		class Student{
+		public:
+			Student(){}
+		};
+
+		hay
+		class Student{
+		};
+	Nếu cố gán constructor vào phạm vi private thì chương trình sẽ báo lỗi
+destructor:
+	Hàm sẽ luôn được gọi khi kết thúc hàm
+	Mặc định là luôn trùng tên với class nhưng có ~
+		~Student
+	Dùng để giải phóng bộ nhớ khi cần thiết(Cụ thể là cấp phát động)
+		class Array{
+		public:
+			int*arr;
+			~Array()
+			{
+				delete[] arr;
+			}
+		};
+
+Private: Nêu được dùng để gán biến và public được dùng để gán hàm
+
+Các kí hiệu: 
+	'-': private
+	'#': protected
+	'+': public
+	Gạch chân: static
+	Chữ nghiêng: trừu tượng (=0)
+	Phụ thuộc: ----->
+	Kết hợp: ->
+	Thu nạp: -<>
+	Hợp thành: -<:>
+
+Tạo class ở file riêng
+	*chi tiết xem file Student.cpp
+	khi được gọi ở mainProgram(theoryProgram.cpp) thì cần #include "Student.cpp"
+
+Static(Phương thức tĩnh) và non-static:
+	Hãy xem ví dụ sau để hình tượng và các khai bảo:
+	class Student{
+	private:
+		string name;
+	pulic:
+		static int numberOfStudents;
+		student(string name){
+			this->name = name;
+			numberOfStudent++;
+		}
+	};
+	int Student::numberOfStudents = 0;
+
+	Student s1("A");
+	Student s2("B");
+	s1.numberOfStudents = s1.numberOfStudents = Student::numberOfStudents = 2
+	là biến tĩnh dùng chung cho mọi thành viên trong class
+		Có thế được dùng để đếm số học sinh
+		Hoặc tìm giá trị (ví dụ giá trị lớn nhất):
+			static int max(int a, int b){
+				return a>b? a:b;
+			}
+
+			cout<<Math::max(2,3)<<endl; //3;
+	*stactic chỉ được dùng với biến, không thể được dùng với hàm trả về biến có trong class
+		X:
+			int PI = 3.14;
+			static double getPi() return PI;
+		check:
+			static int numberPlusOne(int x)
+				return x+1;
+	Có thể dùng phương thức nạp chồng
+		cùng tên trong một class
+			static int abs(int x)...
+			static double abs (double x)...
+		dùng lại hàm trong một class
+			static int min(int x, int y)...
+			static int min(int x, int y, int z)
+				return min(min(x, y), z);
+
+Tính kế thừa: 
+	cú pháp: class (Class con): *(Trạng thái kế thừa) (Class cha){}
+		Ví dụ: class Student: public Person
+	Mục đích:
+		Tránh lặp code
+		Kiểm soát code khoa học hơn
+	*Có thể thay đổi trạng thái kế thừa(phạm vi truy cập):
+		public    -> private + protected + public
+		protected -> private + protected
+		private   -> private
+		hoặc là bỏ qua -> kế thừa toàn bộ (Hạn chế)
+	*Nên tách file origin(gốc) và file inheritance(kế thừa) ra riêng
+		Việc tách file và import "Origin.cpp" vào mỗi file con cũng tương tự việc copy paste vào main nên tránh lặp code khi paste quá nhiều <iostream> "Origin.cpp" thì 
+			Origin.cpp:
+			khai báo tổng hợp các thư viện cần thiết 
+			Khai báo thêm 
+				#pragma once 
+				hoặc:
+					#ifndef PERSON_CPP
+					#define PERCON_CPP
+					class origin {
+					};
+					#endif
+			và hàm main: không cần khai báo thư viện giống Origin.cpp
+	*Chỉ có thể kế thừa với các thuộc tính thuộc protected và public nên cần thông qua setter và getter để set data
+
+	Constructor trong tính kế thừa:
+		Cần chỉ rõ constructor nào của lớp cha (nều có >=2) hoặc là báo lỗi
+			class Origin{
+			...
+				Origin(){}
+				Origin(string name){ this-> name = name}
+			}
+			class Inheritance : Origin{
+				Inheritance(string name): Origin(name){}
+			}
+			-> chính là chỉ Origin(string)
+	Kế thừa phương thức của lớp cha
+		Nếu trùng tên với lớp cha, thì lớp con sẽ vô hiệu lớp cha
+		Có thể ghi đè lớp cha bằng toán tử ::
+			ví dụ:
+				//Inheritance
+				void display(){
+					Otigin::display();
+					...
+				}
+	upcasting và downcasting:
+		*không được phổ biến vì có thể gây mất mát dữ liệu
+		upcasting: con trỏ class con chỉ tới con trỏ class cha
+			class A{
+			public:
+			    void sayHello()
+			    {
+			        cout << "Hello I'm Quan";
+			    }
+			};
+
+			class B : public A{
+			public:
+			    void sayHello()
+			    {
+			        cout << "Hi I'm Le Quan";
+			    }
+
+			    void sayGoodbye()
+			    {
+			        cout << "Goodbye!";
+			    }
+			};
+
+			// Trong hàm main
+			A *p = new B;
+			p->sayHello(); // Hello I'm Quan
+			p->sayGoodbye(); // Lỗi do A không có phương thức này
+		downcasting: con trỏ class cha chỉ tới con trỏ class con
+			class A{
+			public:
+			    void sayHello()
+			    {
+			        cout << "Hello I'm Quan";
+			    }
+			};
+
+			class B : public A{
+			public:
+			    void sayHello()
+			    {
+			        A::sayHello();
+			        cout << " Hi I'm Le Quan";
+			    }
+			};
+
+			// trong hàm main
+			B *p = (B *)new A;
+			p->sayHello(); //Hello I'm Quan Hi I'm Le Quan
+	Hàm ảo virtual:
+		*Là chỉ rõ mức độ ưu tiên, tức là khi có cùng hàm giữa class con và class cha thì nếu là hàm ảo (virtual ở class cha) thì bỏ qua vì mức độ ưu tiên thấp hơn
+		ví dụ:
+			class Animal{
+			public:
+				virtual void display(){
+					cout<<"Hello"<<endl;
+				}
+			};
+			class Cat: public Animal{
+			public:
+				void display(){
+					cout<<"Hi";
+				}
+			};
+
+			// trong hàm main
+			Cat cat;
+			Animal* animal = &cat;
+			animal->display(); // Hi
+		*Luôn gọi virtual cho destructor ở hàm cha vì liên quan đến rò rĩ bộ nhớ
+			Tài nguyên ở hàm con thì ưu tiên giải phóng ở hàm con
+
+Tính đa hình:
+	Nạp chồng phương thức :
+		Cùng tên hàm nhưng nhiều kiểu nhiều loại
+	Ghi đề phương thức:
+		Hàm con kế thừa nhưng thay đổi cho phù hợp
+	Thông qua đối tượng đa hình:
+		Sử dụng upcasting
+	*Lớp trừu tượng:
+		ứng dụng virtual:
+			class cha{
+				virtual void display()=0;
+			}
+			// Được hiểu là các class con có hàm display()
+	Các mối quan hệ giữa các đối tượng:
+		Quan hệ phụ thuộc(Dependency:
+			*Phụ thuộc hoàn toàn, nếu lớp chủ bị thay đổi thì lớp bị phụ thuộc phải được chỉnh sửa lại
+			*Dấu hiệu: Sử dụng các hàm tính toán
+				class A{
+					void myMethod(class b){
+						b.doWork();
+					}
+				};
+		Quan hệ kết hợp(Association):
+			*Đối tượng này có thể liên kết với nhiều đối tượng khác, và đối tượng khác có thể liên kết với nhiều đối tượng này
+			*Dấu hiệu: Sử dụng class A trong khai báo của class B, đồng thời sử dụng class B trong khai báo của class A
+				class Teacher{
+				private:
+					string name;
+					Student student;
+				public:
+					Teacher(){}
+					Teacher(string name, Student student){
+						this->name = name;
+						this->student = student;
+					}
+					string getStudentName(){
+						return student.getName();
+					}
+					string getName(){
+						return name;
+					}
+				};
+				class Student{
+				private:
+					string name;
+					Teacher teacher;
+				public:
+					Student(string name, Teacher teacher){
+						this->name = name;
+						this->Teacher = teacher;
+					}
+					string getTeacherName(){
+						return teacher.getName();
+					}
+					string getName(){
+						return name;
+					}
+				};
+				// Có thể thấy Student thì có thể học nhiều Teachers khác nhau và Teacher có thể dạy nhiều Students khác nhau
+		Quan hệ thu nạp(Aggregation):
+			*Đây là mối quan hệ sở hữu, tức là một class này có thể sở hữu nhiều class khác, khi class này bị hủy thì các class khác cũng vẫn tiếp tục sống
+				public class{
+					private Bar bar = New Bar();
+				}
+		Quan hệ hợp thành(Composition):
+			*Đây là mối quan hệ sở hữu, tức là một class này có thể sở hữu nhiều class khác, khi class này bị hủy thì các class khác sẽ bị hủy
+				public class Foo { 
+				    private Bar bar; 
+				    Foo(Bar bar) { 
+				       this.bar = bar; 
+				    }
+				}
+
+
+
+Lưu ý nhỏ:
+	Khi muốn set điều kiện cho constructor:
+		cú pháp: this->Hàm(biến)
+			ví dụ:	this->setScore(score); //với hàm setScore có 1 vài điều kiện
+	

@@ -1,0 +1,5 @@
+X64dbg, x32dbg: Dùng để disassemble các chương trình về dạng asm và sửa đổi một vài thứ
+detect it easy: Xem thông tin file
+SASM: xem code asm nhanh
+Emu8086: tính toán với ngôn ngữ asm
+VMware với các phiên bản ubuntu, linux,...
